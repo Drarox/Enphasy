@@ -48,7 +48,7 @@ async function syncDailyData() {
 
 export async function startCrons() {
     try {
-        // Refresh access token immediately on startup
+        // Refresh access token once immediately on startup
         await refreshAccessToken();
     } catch (err) {
         console.error('[Error] Failed to refresh token on startup:', err);

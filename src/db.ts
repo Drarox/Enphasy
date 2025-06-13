@@ -2,6 +2,17 @@ import { Database } from 'bun:sqlite';
 
 export const db = new Database('./db/enphase.sqlite');
 
+export function testDbConnection() {
+    try {
+        db.prepare('SELECT 1').get();
+        console.log('[DB] Connection to SQLite successful.');
+        return true;
+    } catch (err) {
+        console.error('[DB Error] Failed to connect to SQLite database:', err);
+        return false;
+    }
+}
+
 try {
     db.run(`
     CREATE TABLE IF NOT EXISTS lifetime_data (

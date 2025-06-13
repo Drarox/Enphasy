@@ -1,19 +1,39 @@
 import { Hono } from 'hono';
 import { fetchCurrentSummary } from './api';
 import { startCrons } from './cron';
-import { db } from './db';
-
-const REQ_CACHE_MINUTES = Bun.env.REQ_CACHE_MINUTES ? parseInt(Bun.env.REQ_CACHE_MINUTES) : 60;
+import { db, testDbConnection } from './db';
 
 const app = new Hono();
 
-let lastSummary: any = null;
-let lastFetched = 0;
+// Test environment variables
+const REQ_CACHE_MINUTES = Bun.env.REQ_CACHE_MINUTES ? parseInt(Bun.env.REQ_CACHE_MINUTES) : 60;
 
+const requiredVars = [
+  'ENPHASE_API_KEY',
+  'ENPHASE_BASIC_AUTH',
+  'SYSTEM_ID'
+];
+
+const missing = requiredVars.filter((name) => !Bun.env[name]);
+
+if (missing.length > 0) {
+  console.error('[ENV Error] Missing required environment variables:', missing.join(', '));
+  process.exit(1); // fatal exit
+}
+
+// Test DB connection before proceeding
+if (!testDbConnection()) {
+  console.error('[Fatal] Aborting startup due to database connection failure.');
+  process.exit(1);
+}
+
+// Routes
 // Health check
 app.get('/', (c) => c.text('Server is running'));
 
 // Public endpoint: Cached Enphase data
+let lastSummary: any = null;
+let lastFetched = 0;
 app.get('/current', async (c) => {
   try {
     const now = Date.now();
@@ -30,7 +50,10 @@ app.get('/current', async (c) => {
 
 // Lifetime data by date
 app.get('/daily/:date', (c) => {
-  const date = c.req.param('date');
+  let date = c.req.param('date');
+
+  if (date=='yesterday')
+    date = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
   // Basic ISO date format check (YYYY-MM-DD)
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {

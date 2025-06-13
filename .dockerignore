@@ -15,3 +15,4 @@ helm-charts
 coverage*
 *.sqlite
 db/
+.DS_Store

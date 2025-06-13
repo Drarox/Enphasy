@@ -60,13 +60,7 @@ See the How to get your Enphase API credentials section for details on how to ob
 
 ### Run with Compose
 
-1. Create a directory for your DB:
-
-```bash
-mkdir -p ./db
-```
-
-2. Use this `docker-compose.yml`:
+Use this `docker-compose.yml`:
 
 ```yaml
 version: "3.9"
@@ -79,18 +73,20 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./db:/usr/src/app/db
+      - db:/usr/src/app/db
     environment:
       ENPHASE_API_KEY: your_api_key
       ENPHASE_INITAL_REFRESH_TOKEN: your_refresh_token
-      ENPHASE_BASIC_AUTH: xxxxx== #base64encoded(client_id:secret)
+      ENPHASE_BASIC_AUTH: xxxxx= #base64encoded(client_id:secret)
       SYSTEM_ID: 00000000 #can be found in the Enphase dashboard or mobile app
     #OR use env_file:
     #env_file:
     #  - .env
+volumes:
+  db:
 ```
 
-3. Start:
+Start:
 
 ```bash
 docker-compose up -d
@@ -238,6 +234,65 @@ bun run src/index.ts
 * SQLite writes must have write permissions. When running in Docker, always bind the DB to a host directory.
 * The Enphase free tier (Watt) limits API calls to 1000 per month — make sure to respect refresh limits.
 * All critical errors are logged in the container console.
+
+---
+
+<details>
+<summary>📺 How to add Enphasy as a <a href="https://gethomepage.dev/" target="_blank">Homepage</a> widget</summary>
+
+To show Enphasy data in your Homepage dashboard, you can use the built-in `customapi` widget. Below is an example configuration that shows:
+
+- Real-time power data
+- Lifetime energy metrics
+- Yesterday's solar, consumption, import/export data
+
+Add this block to your `homepage/config/services.yaml` file:
+
+```yaml
+- Enphase Enlighten:
+    icon: /img/enphase.png
+    href: https://enlighten.enphaseenergy.com/web/
+    description: Solar Power
+    widgets:
+      - type: customapi
+        url: http://enphasy:3000/current
+        method: GET
+        mappings:
+          - field: current_power
+            label: Current Power
+            format: number
+            suffix: "W"
+          - field: energy_today
+            label: Energy Today
+            format: number
+            suffix: "Wh"
+          - field: energy_lifetime
+            label: Energy Lifetime
+            format: number
+            scale: 0.001
+            suffix: "kWh"
+      - type: customapi
+        url: http://enphasy:3000/daily/yesterday
+        method: GET
+        mappings:
+          - field: production
+            label: Production
+            format: number
+            suffix: "Wh"
+          - field: consumption
+            label: Consumption
+            format: number
+            suffix: "Wh"
+          - field: import
+            label: Import
+            format: number
+            suffix: "Wh"
+          - field: export
+            label: Export
+            format: number
+            suffix: "Wh"
+```
+</details>
 
 ---
 

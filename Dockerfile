@@ -23,6 +23,7 @@ RUN bun build src/index.ts --outdir=dist --target=bun
 # Step 4: Final release image
 FROM base AS release
 WORKDIR /usr/src/app
+RUN mkdir -p /usr/src/app/db && chown -R bun:bun /usr/src/app/db
 COPY --from=build /usr/src/app/dist ./dist
 COPY --from=install /temp/prod/node_modules ./node_modules
 COPY package.json ./
