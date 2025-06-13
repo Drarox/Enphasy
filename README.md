@@ -1,4 +1,9 @@
 # ☀️ Enphasy - Enphase Monitoring Server
+[![Docker Pulls](https://badgen.net/docker/pulls/drarox/enphasy?icon=docker&label=pulls)](https://hub.docker.com/r/drarox/enphasy/)
+[![Docker Image Size](https://badgen.net/docker/size/drarox/enphasy?icon=docker&label=image%20size)](https://hub.docker.com/r/drarox/enphasy/)
+[![Github issues](https://img.shields.io/github/issues/drarox/enphasy)](https://github.com/Drarox/Enphasy/issues)
+[![Github Pull Requests](https://img.shields.io/github/issues-pr/drarox/enphasy)](https://github.com/Drarox/Enphasy/pulls)
+[![Github Licens](https://img.shields.io/github/license/drarox/enphasy)](https://github.com/Drarox/Enphasy/blob/master/LICENSE)
 
 A lightweight API server for fetching, storing, and serving solar energy data from the external Enphase Monitoring API, using SQLite as a local database. The app minimizes API usage by caching responses and scheduling smart fetches.
 
@@ -146,7 +151,7 @@ You’ll only need this **once**—afterward, Enphasy will auto-refresh it.
 
 ##### 🔐 Authorize your app with an Enphase consumer account:
 
-Take your **Authorization URL** and append the required redirect URI:
+Take the **Authorization URL** and append the required redirect URI:
 
 Just add `redirect_uri=https://api.enphaseenergy.com/oauth/redirect_uri` to the end of the URL:
 
@@ -298,4 +303,5 @@ Add this block to your `homepage/config/services.yaml` file:
 
 ## 📃 License
 
-MIT
+[GPL-3.0 license](https://github.com/Drarox/Enphasy/blob/master/LICENSE)
+
