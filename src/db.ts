@@ -1,6 +1,6 @@
 import { Database } from 'bun:sqlite';
 
-export const db = new Database('./data/enphase.sqlite');
+export const db = new Database('./db/enphase.sqlite');
 
 try {
     db.run(`

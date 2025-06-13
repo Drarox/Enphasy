@@ -7,7 +7,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./data/:/usr/src/app/data/
+      - ./db/:/usr/src/app/db/
     env_file:
       - .env
     restart: unless-stopped
