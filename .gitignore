@@ -1,6 +1,7 @@
 # deps
 node_modules/
 .env
-enphase.sqlite
+*.sqlite
 .idea
 .vscode
+dist/

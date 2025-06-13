@@ -2,7 +2,8 @@
   "name": "enphasy",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
-    "start": "bun run src/index.ts"
+    "start": "bun run src/index.ts",
+    "build": "bun build src/index.ts --outdir=dist --target=bun"
   },
   "dependencies": {
     "croner": "^9.0.0",

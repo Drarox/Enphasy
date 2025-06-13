@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  enphase-monitor:
+    build: .
+    container_name: enphase-monitor
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data/:/usr/src/app/data/
+    env_file:
+      - .env
+    restart: unless-stopped
