@@ -3,6 +3,8 @@ import { fetchCurrentSummary } from './api';
 import { startCrons } from './cron';
 import { db } from './db';
 
+const REQ_CACHE_MINUTES = Bun.env.REQ_CACHE_MINUTES ? parseInt(Bun.env.REQ_CACHE_MINUTES) : 60;
+
 const app = new Hono();
 
 let lastSummary: any = null;
@@ -15,7 +17,7 @@ app.get('/', (c) => c.text('Server is running'));
 app.get('/current', async (c) => {
   try {
     const now = Date.now();
-    if (!lastSummary || now - lastFetched > 60 * 60 * 1000) {
+    if (!lastSummary || now - lastFetched > REQ_CACHE_MINUTES * 60 * 1000) {
       lastSummary = await fetchCurrentSummary();
       lastFetched = now;
     }
@@ -40,6 +42,17 @@ app.get('/daily/:date', (c) => {
     return row ? c.json(row) : c.notFound();
   } catch (err) {
     console.error('[DB Error] Failed to retrieve daily data:', err);
+    return c.json({ error: 'Failed to query database' }, 500);
+  }
+});
+
+// Lifetime data
+app.get('/lifetime', (c) => {
+  try {
+    const rows = db.query('SELECT * FROM lifetime_data').all();
+    return rows ? c.json(rows) : c.notFound();
+  } catch (err) {
+    console.error('[DB Error] Failed to retrieve data:', err);
     return c.json({ error: 'Failed to query database' }, 500);
   }
 });

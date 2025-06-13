@@ -66,5 +66,5 @@ export async function startCrons() {
         syncDailyData().catch(err => console.error('[Error] Sync daily data:', err));
     });
 
-    console.log('[Cron] Jobs scheduled: token @ 00:00, data sync @ 03:00');
+    console.log('[Cron] Jobs scheduled: refreshAccessToken @ 00:00, syncDailyData @ 03:00');
 }
