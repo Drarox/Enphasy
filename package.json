@@ -8,8 +8,10 @@
     "docker-build-deploy": "docker buildx build --platform linux/amd64,linux/arm64 -t drarox/enphasy:latest --push ."
   },
   "dependencies": {
+    "@hono/swagger-ui": "^0.5.2",
     "croner": "^9.0.0",
-    "hono": "^4.7.11"
+    "hono": "^4.7.11",
+    "hono-openapi": "^0.4.8"
   },
   "devDependencies": {
     "@types/bun": "latest"
