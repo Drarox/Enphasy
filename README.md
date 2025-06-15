@@ -254,49 +254,53 @@ To show Enphasy data in your Homepage dashboard, you can use the built-in `custo
 Add this block to your `homepage/config/services.yaml` file:
 
 ```yaml
-- Enphase Enlighten:
-    icon: /img/enphase.png
-    href: https://enlighten.enphaseenergy.com/web/
-    description: Solar Power
-    widgets:
-      - type: customapi
-        url: http://enphasy:3000/current
-        method: GET
-        mappings:
-          - field: current_power
-            label: Current Power
-            format: number
-            suffix: "W"
-          - field: energy_today
-            label: Energy Today
-            format: number
-            suffix: "Wh"
-          - field: energy_lifetime
-            label: Energy Lifetime
-            format: number
-            scale: 0.001
-            suffix: "kWh"
-      - type: customapi
-        url: http://enphasy:3000/daily/yesterday
-        method: GET
-        mappings:
-          - field: production
-            label: Production
-            format: number
-            suffix: "Wh"
-          - field: consumption
-            label: Consumption
-            format: number
-            suffix: "Wh"
-          - field: import
-            label: Import
-            format: number
-            suffix: "Wh"
-          - field: export
-            label: Export
-            format: number
-            suffix: "Wh"
+    - Enphase Enlighten:
+        icon: /img/enphase.png
+        href: https://enlighten.enphaseenergy.com/web/
+        description: Solar Power
+        widgets:
+          - type: customapi
+            url: http://enphasy:3000/current
+            method: GET
+            mappings:
+              - field: current_power
+                label: Current Power
+                format: number
+                suffix: "W"
+              - field: energy_today
+                label: Energy Today
+                format: number
+                suffix: "Wh"
+              - field: energy_lifetime
+                label: Energy Lifetime
+                format: number
+                scale: 0.001
+                suffix: "kWh"
+          - type: customapi
+            url: http://enphasy:3000/daily/yesterday
+            method: GET
+            mappings:
+              - field: production
+                label: Prod Yest
+                format: number
+                suffix: "Wh"
+              - field: consumption
+                label: Cons Yest
+                format: number
+                suffix: "Wh"
+              - field: import
+                label: Import Yest
+                format: number
+                suffix: "Wh"
+              - field: export
+                label: Export Yest
+                format: number
+                suffix: "Wh"
 ```
+
+Preview:
+
+![Enphasy widget](https://raw.githubusercontent.com/Drarox/Enphasy/master/img/homepage.png)
 </details>
 
 ---
