@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { startCrons } from './cron';
 import { testDbConnection } from './db';
 import controller from './controller';
-import { HTTPException } from 'hono/http-exception';
+import {HttpException} from "./exception";
 
 const app = new Hono();
 
@@ -13,7 +13,6 @@ const requiredVars = [
 ];
 
 const missing = requiredVars.filter((name) => !Bun.env[name]);
-
 if (missing.length > 0) {
   console.error('[ENV Error] Missing required environment variables:', missing.join(', '));
   process.exit(1); // fatal exit
@@ -33,8 +32,8 @@ startCrons();
 
 // Error handler
 app.onError((err, c) => {
-  if (err instanceof HTTPException)
-    return c.json({error: err.message || 'Error ' + err.status}, err.status);
+  if (err instanceof HttpException)
+    return err.toResponse();
 
   console.error('Unhandled error:', err);
   return c.json({ error: 'Internal Server Error' }, 500);

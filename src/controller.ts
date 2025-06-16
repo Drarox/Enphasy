@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { swaggerUI } from '@hono/swagger-ui';
 import { describeRoute, openAPISpecs } from "hono-openapi";
 import {getCurrentData, getDailyData, getLifeTimeData} from "./service";
-import { HTTPException } from 'hono/http-exception';
+import {InternalServerException, NotFoundException} from "./exception";
 
 const app = new Hono();
 
@@ -32,7 +32,7 @@ app.get('/current',
     async (c) => {
         const lastSummary = await getCurrentData();
         if (!lastSummary)
-            throw new HTTPException(500, { message: 'Failed to fetch data' });
+            throw new InternalServerException('Failed to fetch data');
 
         return c.json(lastSummary);
 });
@@ -52,7 +52,7 @@ app.get('/daily/:date',
 
         const data = await getDailyData(date);
         if (!data)
-            throw new HTTPException(404, { message: 'No data found' });
+            throw new NotFoundException('No data found');
 
         return c.json(data);
 })
