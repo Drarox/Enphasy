@@ -1,8 +1,11 @@
 import { Hono } from 'hono';
-import { swaggerUI } from '@hono/swagger-ui';
 import { describeRoute, openAPISpecs } from "hono-openapi";
 import {getCurrentData, getDailyData, getLifeTimeData} from "./service";
 import {InternalServerException, NotFoundException} from "./exception";
+import z from "zod";
+import "zod-openapi/extend";
+import {resolver, validator as zValidator} from "hono-openapi/zod";
+import {Scalar} from "@scalar/hono-api-reference";
 
 const app = new Hono();
 
@@ -25,7 +28,7 @@ app.get('/current',
         summary: 'Current data',
         description: 'Get current data with cache',
         responses: {
-            200: { description: 'Successful response' },
+            200: { description: 'Successful response', content: { "application/json": { schema: { example: { "system_id": 1234567, "current_power": 1953, "energy_lifetime": 8331057, "energy_today": 5223, "last_interval_end_at": 1750073601, "last_report_at": 1750073656, "modules": 7, "operational_at": 1677081194, "size_w": 2975, "nmi": null, "source": "meter", "status": "normal", "summary_date": "2025-06-16", "battery_charge_w": 0, "battery_discharge_w": 0, "battery_capacity_wh": 0 }} } } },
             500: { description: 'Failed to fetch data' },
         },
     }),
@@ -43,12 +46,27 @@ app.get('/daily/:date',
         summary: 'Daily data',
         description: 'Get data by date',
         responses: {
-            200: { description: 'Successful response' },
-            400: { description: 'Failed to fetch data' },
+            200: { description: 'Successful response',
+                content: { "application/json": { schema: resolver(
+                    z.object({
+                        date: z.string().openapi({ example: "2022-01-01" }),
+                        production: z.number().openapi({ example: 1, description: "Wh" }),
+                        consumption: z.number().openapi({ example: 1, description: "Wh" }),
+                        import: z.number().openapi({ example: 1, description: "Wh" }),
+                        export: z.number().openapi({ example: 1, description: "Wh" })
+                    })) }}
+            },
+            404: { description: 'No data found' },
         },
     }),
+    zValidator("param",
+        z.object({
+            date: z.string().regex(/^(yesterday|\d{4}-\d{2}-\d{2})$/,
+                { message: 'Must be "yesterday" or a date in YYYY-MM-DD format' }
+            ).openapi({ example: "2022-01-01", description: 'Must be "yesterday" or a date in YYYY-MM-DD format' })
+        })),
     async (c) => {
-        const date = c.req.param('date');
+        const date = c.req.valid('param').date;
 
         const data = await getDailyData(date);
         if (!data)
@@ -63,16 +81,21 @@ app.get('/lifetime',
         summary: 'Lifetime data',
         description: 'Get lifetime data',
         responses: {
-            200: { description: 'Successful response' },
-            400: { description: 'Failed to fetch data' },
+            200: { description: 'Successful response', content: { "application/json": { schema: { example: [ { "date": "2023-02-22", "production": 5763, "consumption": 13450, "import": 13444, "export": 0 }, { "date": "2023-02-23", "production": 9349, "consumption": 38696, "import": 29488, "export": 141 } ] } } } },
         },
     }),
     async (c) => {
         return c.json(await getLifeTimeData());
 });
 
-// OpenAPI with Swagger UI
-app.get('/', swaggerUI({ url: '/openapi' }));
+// OpenAPI with Scalar
+app.get(
+    "/",
+    Scalar({
+        theme: "default",
+        url: "/openapi",
+    })
+);
 app.get(
     "/openapi",
     openAPISpecs(app, {

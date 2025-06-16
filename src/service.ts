@@ -22,10 +22,6 @@ export const getDailyData = async (dateParam: string) => {
     if (date=='yesterday')
         date = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-    // Basic ISO date format check (YYYY-MM-DD)
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date))
-        throw new BadRequestException('Invalid date format. Use YYYY-MM-DD.');
-
     try {
         return db.query('SELECT * FROM lifetime_data WHERE date = ?').get(date);
     } catch (err) {
