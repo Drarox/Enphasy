@@ -5,5 +5,4 @@ node_modules/
 .idea
 .vscode
 dist/
-db/
 .DS_Store

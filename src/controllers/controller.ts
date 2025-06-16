@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { describeRoute, openAPISpecs } from "hono-openapi";
-import {getCurrentData, getDailyData, getLifeTimeData} from "./service";
-import {InternalServerException, NotFoundException} from "./exception";
+ import {getCurrentData, getDailyData, getLifeTimeData} from "@services/service";
+import {InternalServerException, NotFoundException} from "@exceptions/http-exceptions";
 import z from "zod";
 import "zod-openapi/extend";
 import {resolver, validator as zValidator} from "hono-openapi/zod";

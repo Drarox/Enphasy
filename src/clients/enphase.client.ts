@@ -1,4 +1,4 @@
-import {getRefreshToken, saveRefreshToken} from './db';
+import {getRefreshToken, saveRefreshToken} from '../db';
 
 const BASE_URL = 'https://api.enphaseenergy.com';
 

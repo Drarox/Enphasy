@@ -1,6 +1,6 @@
 import { Cron } from 'croner';
-import { refreshAccessToken, fetchLifetime } from './api';
-import { db } from './db';
+import { refreshAccessToken, fetchLifetime } from '@clients/enphase.client';
+import { db } from '../db';
 
 function getDateString(start: string, index: number): string {
     const [year, month, day] = start.split('-').map(Number);

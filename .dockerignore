@@ -14,6 +14,5 @@ helm-charts
 .idea
 coverage*
 *.sqlite
-db/
 .DS_Store
 dist/

@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
-import { startCrons } from './cron';
+import { startCrons } from '@crons/cron';
 import { testDbConnection } from './db';
-import controller from './controller';
-import {HttpException} from "./exception";
+import controller from '@controllers/controller';
+import {HttpException} from "@exceptions/http-exceptions";
 
 const app = new Hono();
 

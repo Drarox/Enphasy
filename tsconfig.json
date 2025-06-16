@@ -2,6 +2,16 @@
   "compilerOptions": {
     "strict": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx"
+    "jsxImportSource": "hono/jsx",
+    "baseUrl": "./src",
+    "paths": {
+      "@controllers/*": ["controllers/*"],
+      "@services/*": ["services/*"],
+      "@clients/*": ["clients/*"],
+      "@schemas/*": ["schemas/*"],
+      "@exceptions/*": ["exceptions/*"],
+      "@crons/*": ["crons/*"],
+      "@utils/*": ["utils/*"]
+    }
   }
 }
