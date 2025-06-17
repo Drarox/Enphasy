@@ -5,6 +5,7 @@
     "jsxImportSource": "hono/jsx",
     "baseUrl": "./src",
     "paths": {
+      "@app": ["index"],
       "@controllers/*": ["controllers/*"],
       "@services/*": ["services/*"],
       "@clients/*": ["clients/*"],

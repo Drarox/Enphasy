@@ -28,7 +28,8 @@ if (!testDbConnection()) {
 app.route('/', controller);
 
 // Start cron jobs
-startCrons();
+if (Bun.env.NODE_ENV !== 'test')
+  startCrons();
 
 // Error handler
 app.onError((err, c) => {
@@ -40,7 +41,8 @@ app.onError((err, c) => {
 })
 
 // Secure export (port from env fallback)
-export default {
-  port: Bun.env.PORT ? Number(Bun.env.PORT) : 3000,
-  fetch: app.fetch,
-};
+// export default {
+//   port: Bun.env.PORT ? Number(Bun.env.PORT) : 3000,
+//   fetch: app.fetch,
+// };
+export default app;

@@ -4,6 +4,7 @@
     "dev": "bun run --hot src/index.ts",
     "start": "bun run src/index.ts",
     "build": "bun build src/index.ts --outdir=dist --target=bun",
+    "test": "bun test",
     "docker-build": "docker buildx build --platform linux/amd64,linux/arm64 -t drarox/enphasy:latest --load .",
     "docker-build-deploy": "docker buildx build --platform linux/amd64,linux/arm64 -t drarox/enphasy:latest --push ."
   },
