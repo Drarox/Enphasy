@@ -3,6 +3,8 @@ import { startCrons } from '@crons/cron';
 import { testDbConnection } from './db';
 import controller from '@controllers/controller';
 import {HttpException} from "@exceptions/http-exceptions";
+import { serveStatic } from 'hono/bun';
+import { cors } from 'hono/cors';
 
 const app = new Hono();
 
@@ -24,8 +26,12 @@ if (!testDbConnection()) {
   process.exit(1);
 }
 
+// Middlewares
+app.use('*', cors());
+
 // Routes
 app.route('/', controller);
+app.use('/*', serveStatic({ root: './static/' }));
 
 // Start cron jobs
 if (Bun.env.NODE_ENV !== 'test')

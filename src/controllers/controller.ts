@@ -75,7 +75,7 @@ app.get('/lifetime',
 
 // OpenAPI with Scalar
 app.get(
-    "/",
+    "/docs",
     Scalar({
         theme: "default",
         url: "/openapi",

@@ -3,7 +3,7 @@
 [![Docker Image Size](https://badgen.net/docker/size/drarox/enphasy?icon=docker&label=image%20size)](https://hub.docker.com/r/drarox/enphasy/)
 [![Github issues](https://img.shields.io/github/issues/drarox/enphasy?logo=github)](https://github.com/Drarox/Enphasy/issues)
 [![Github Pull Requests](https://img.shields.io/github/issues-pr/drarox/enphasy?logo=github)](https://github.com/Drarox/Enphasy/pulls)
-[![Github Licens](https://img.shields.io/github/license/drarox/enphasy)](https://github.com/Drarox/Enphasy/blob/master/LICENSE)
+[![Github License](https://img.shields.io/github/license/drarox/enphasy)](https://github.com/Drarox/Enphasy/blob/master/LICENSE)
 
 A lightweight API server for fetching, storing, and serving solar energy data from the external Enphase Monitoring API, using SQLite as a local database. The app minimizes API usage by caching responses and scheduling smart fetches.
 
@@ -27,12 +27,19 @@ To overcome this limitation, **Enphasy uses Enphase’s official cloud API** to 
 - Refreshes **access token daily at midnight**
 - Includes Docker support with volume binding for database persistence
 
+
+---
+
+## 🖥️ Web Interface and API Docs
+
+Once the service is running, you can access:
+
+-  A small **Dashboard** (minimal status view) on `/`
+- The **Full API documentation** (made via Scalar) on `/docs`
+
 ---
 
 ## 🌐 API Endpoints
-
-- `GET /`  
-  Health check: returns "Server is running"
 
 - `GET /current`  
   Returns cached current system summary (to avoid API limitations)
@@ -43,6 +50,8 @@ To overcome this limitation, **Enphasy uses Enphase’s official cloud API** to 
 - `GET /lifetime`  
   Returns all the stored lifetime data
 
+- `GET /health`  
+  Returns simple "Server is running" health check response
 ---
 
 ## 🔐 Environment Variables
@@ -54,7 +63,7 @@ ENPHASE_API_KEY=your_api_key_here
 ENPHASE_INITIAL_REFRESH_TOKEN=your_initial_refresh_token
 ENPHASE_BASIC_AUTH=base64encoded(client_id:secret)
 SYSTEM_ID=your_enphase_system_id (can be found in the Enphase dashboard or mobile app)
-REQ_CACHE_MINUTES=60 (optionnal)
+REQ_CACHE_MINUTES=60 (optional)
 ````
 
 See the How to get your Enphase API credentials section for details on how to obtain these values.
@@ -227,6 +236,8 @@ ENPHASE_INITIAL_REFRESH_TOKEN=your-refresh-token
 
 ## 🧪 Dev Server
 
+Note: This project uses [Bun](https://bun.sh). Install it with `curl -fsSL https://bun.sh/install | bash`
+
 ```bash
 bun install
 bun run src/index.ts
@@ -237,7 +248,7 @@ bun run src/index.ts
 ## 📌 Notes
 
 * SQLite writes must have write permissions. When running in Docker, always bind the DB to a host directory.
-* The Enphase free tier (Watt) limits API calls to 1000 per month — make sure to respect refresh limits.
+* The Enphase free tier (Watt) limits API calls to 1000 per month — make sure to set `REQ_CACHE_MINUTES` to a sensible value to avoid hitting rate limits.
 * All critical errors are logged in the container console.
 
 ---

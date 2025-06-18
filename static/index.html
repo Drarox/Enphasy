@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enphasy Energy Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%234F46E5' d='M12 2L1 12h3v9h7v-6h2v6h7v-9h3L12 2zm0 3.84L17.71 9H14v6h-4V9H6.29L12 5.84z'/%3E%3Cpath fill='%236366F1' d='M13 14H11V8h2z'/%3E%3Cpath fill='%23818CF8' d='M12 2l-11 10h22z'/%3E%3C/svg%3E">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Vue.js CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <style>
+        /* Basic styles for Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Smooth transition for dark mode background */
+            transition: background-color 0.3s ease;
+        }
+        /* Ensure specific elements transition smoothly for dark mode */
+        .bg-white, .bg-gray-100, .bg-gray-50,
+        .text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600, .text-gray-500,
+        .border-gray-200, .border-gray-300, .divide-gray-200,
+        .dark\:bg-gray-800, .dark\:text-gray-100, .dark\:border-gray-700, .dark\:divide-gray-700,
+        .dark\:bg-gray-700, .dark\:text-gray-300, .dark\:bg-indigo-900, .dark\:bg-green-900,
+        .dark\:bg-blue-900, .dark\:bg-purple-900, .dark\:bg-yellow-900, .dark\:bg-red-900,
+        .dark\:text-indigo-100, .dark\:text-green-100, .dark\:text-blue-100, .dark\:text-purple-100,
+        .dark\:text-yellow-100, .dark\:text-red-100, .dark\:text-indigo-400, .dark\:text-red-400,
+        .dark\:bg-indigo-500, .dark\:hover\:bg-indigo-600, .dark\:bg-purple-500, .dark\:hover\:bg-purple-600,
+        .dark\:bg-emerald-900, .dark\:text-emerald-100 { /* Added new dark mode classes for emerald */
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        /* This class will be added/removed by JS for dark mode */
+        html.dark {
+            color-scheme: dark; /* Helps browser UI adapt */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900">
+<div id="app" class="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 sm:p-8 font-sans text-gray-900 dark:text-gray-100 w-full">
+    <div class="max-w-screen-xl mx-auto">
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white mb-8 text-center drop-shadow-lg">Enphasy Energy Dashboard</h1>
+
+        <!-- Current Data Section -->
+        <section class="mb-12 bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 transform hover:scale-[1.005] transition-transform duration-300">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center justify-center sm:justify-start">
+                <svg class="w-8 h-8 sm:w-10 sm:h-10 mr-3 text-indigo-600 dark:text-indigo-400" fill="currentColor" viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M349.4 44.6c5.9-13.7 1.5-29.7-10.6-38.5s-28.6-8-39.9 1.8l-256 224c-10 8.8-13.6 22.9-8.9 35.3S50.7 288 64 288l111.5 0L98.6 467.4c-5.9 13.7-1.5 29.7 10.6 38.5s28.6 8 39.9-1.8l256-224c10-8.8 13.6-22.9 8.9-35.3s-16.6-20.7-30-20.7l-111.5 0L349.4 44.6z"/></svg>
+                Current Energy Overview
+            </h2>
+            <div v-if="loadingCurrent" class="text-center py-8">
+                <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-500 dark:border-indigo-400 mx-auto"></div>
+                <p class="mt-4 text-gray-600 dark:text-gray-300 text-lg">Loading current data...</p>
+            </div>
+            <div v-else-if="errorCurrent" class="text-center py-8 text-red-600 dark:text-red-400 font-medium text-lg">
+                {{ errorCurrent }}
+                <button @click="fetchCurrentData" class="mt-4 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition duration-300 shadow-md">Retry</button>
+            </div>
+            <div v-else-if="currentData" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-indigo-100 dark:bg-indigo-900 p-6 rounded-xl shadow-md flex flex-col items-center justify-center transform hover:scale-105 transition duration-200">
+                    <p class="text-base font-semibold text-indigo-800 dark:text-indigo-200 mb-2">Current Power</p>
+                    <p class="text-4xl font-extrabold text-indigo-900 dark:text-indigo-100">{{ currentData.current_power }} W</p>
+                </div>
+                <div class="bg-green-100 dark:bg-green-900 p-6 rounded-xl shadow-md flex flex-col items-center justify-center transform hover:scale-105 transition duration-200">
+                    <p class="text-base font-semibold text-green-800 dark:text-green-200 mb-2">Energy Today</p>
+                    <p class="text-4xl font-extrabold text-green-900 dark:text-green-100">{{ currentData.energy_today }} Wh</p>
+                </div>
+                <div class="bg-blue-100 dark:bg-blue-900 p-6 rounded-xl shadow-md flex flex-col items-center justify-center transform hover:scale-105 transition duration-200">
+                    <p class="text-base font-semibold text-blue-800 dark:text-blue-200 mb-2">Energy Lifetime</p>
+                    <p class="text-4xl font-extrabold text-blue-900 dark:text-blue-100">{{ currentData.energy_lifetime }} Wh</p>
+                </div>
+                <div class="bg-purple-100 dark:bg-purple-900 p-6 rounded-xl shadow-md flex flex-col items-center justify-center transform hover:scale-105 transition duration-200">
+                    <p class="text-base font-semibold text-purple-800 dark:text-purple-200 mb-2">System ID</p>
+                    <p class="text-2xl font-bold text-purple-900 dark:text-purple-100">{{ currentData.system_id }}</p>
+                </div>
+                <div class="bg-yellow-100 dark:bg-yellow-900 p-6 rounded-xl shadow-md flex flex-col items-center justify-center transform hover:scale-105 transition duration-200">
+                    <p class="text-base font-semibold text-yellow-800 dark:text-yellow-200 mb-2">Last Report At</p>
+                    <p class="text-2xl font-bold text-yellow-900 dark:text-yellow-100 text-center">{{ formatTimestamp(currentData.last_report_at) }}</p>
+                </div>
+                <div class="bg-emerald-100 dark:bg-emerald-900 p-6 rounded-xl shadow-md flex flex-col items-center justify-center transform hover:scale-105 transition duration-200">
+                    <p class="text-base font-semibold text-emerald-800 dark:text-emerald-200 mb-2">Status</p>
+                    <p class="text-2xl font-bold text-emerald-900 dark:text-emerald-100">{{ currentData.status }}</p>
+                </div>
+            </div>
+            <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400 text-lg">
+                No current data available.
+            </div>
+        </section>
+
+        <section class="mb-12 bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 transform hover:scale-[1.005] transition-transform duration-300">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center justify-center sm:justify-start">
+                <svg class="w-8 h-8 sm:w-10 sm:h-10 mr-3 text-indigo-600 dark:text-indigo-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>
+                Daily Energy Summary
+            </h2>
+            <div class="flex flex-col sm:flex-row items-center justify-center sm:justify-start mb-6 space-y-4 sm:space-y-0 sm:space-x-4">
+                <label for="dailyDate" class="text-gray-700 dark:text-gray-300 text-base font-semibold">Select Date:</label>
+                <input type="date" id="dailyDate" v-model="selectedDate"
+                       class="shadow-sm appearance-none border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200" />
+            </div>
+
+            <div v-if="loadingDaily" class="text-center py-8">
+                <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-500 dark:border-indigo-400 mx-auto"></div>
+                <p class="mt-4 text-gray-600 dark:text-gray-300 text-lg">Loading daily data...</p>
+            </div>
+            <div v-else-if="errorDaily" class="text-center py-8 text-red-600 dark:text-red-400 font-medium text-lg">
+                {{ errorDaily }}
+                <button @click="fetchDailyData(selectedDate)" class="mt-4 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition duration-300 shadow-md">Retry</button>
+            </div>
+            <div v-else-if="dailyData" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!--                <div class="bg-indigo-100 dark:bg-indigo-900 p-6 rounded-xl shadow-md flex flex-col items-center justify-center transform hover:scale-105 transition duration-200">-->
+<!--                    <p class="text-base font-semibold text-indigo-800 dark:text-indigo-200 mb-2">Date</p>-->
+<!--                    <p class="text-3xl font-extrabold text-indigo-900 dark:text-indigo-100">{{ dailyData.date }}</p>-->
+<!--                </div>-->
+                <div class="bg-green-100 dark:bg-green-900 p-6 rounded-xl shadow-md flex flex-col items-center justify-center transform hover:scale-105 transition duration-200">
+                    <p class="text-base font-semibold text-green-800 dark:text-green-200 mb-2">Production</p>
+                    <p class="text-3xl font-extrabold text-green-900 dark:text-green-100">{{ dailyData.production }} Wh</p>
+                </div>
+                <div class="bg-blue-100 dark:bg-blue-900 p-6 rounded-xl shadow-md flex flex-col items-center justify-center transform hover:scale-105 transition duration-200">
+                    <p class="text-base font-semibold text-blue-800 dark:text-blue-200 mb-2">Consumption</p>
+                    <p class="text-3xl font-extrabold text-blue-900 dark:text-blue-100">{{ dailyData.consumption }} Wh</p>
+                </div>
+                <div class="bg-purple-100 dark:bg-purple-900 p-6 rounded-xl shadow-md flex flex-col items-center justify-center transform hover:scale-105 transition duration-200">
+                    <p class="text-base font-semibold text-purple-800 dark:text-purple-200 mb-2">Import</p>
+                    <p class="text-3xl font-extrabold text-purple-900 dark:text-purple-100">{{ dailyData.import }} Wh</p>
+                </div>
+                <div class="bg-yellow-100 dark:bg-yellow-900 p-6 rounded-xl shadow-md flex flex-col items-center justify-center transform hover:scale-105 transition duration-200">
+                    <p class="text-base font-semibold text-yellow-800 dark:text-yellow-200 mb-2">Export</p>
+                    <p class="text-3xl font-extrabold text-yellow-900 dark:text-yellow-100">{{ dailyData.export }} Wh</p>
+                </div>
+            </div>
+            <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400 text-lg">
+                No daily data available for the selected date.
+            </div>
+        </section>
+
+        <section class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 transform hover:scale-[1.005] transition-transform duration-300">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center justify-center sm:justify-start">
+                <svg class="w-8 h-8 sm:w-10 sm:h-10 mr-3 text-indigo-600 dark:text-indigo-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l3 3a1 1 0 001.414-1.414L11 9.586V6z" clip-rule="evenodd"></path></svg>
+                Lifetime Energy History
+            </h2>
+            <div v-if="loadingLifetime" class="text-center py-8">
+                <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-500 dark:border-indigo-400 mx-auto"></div>
+                <p class="mt-4 text-gray-600 dark:text-gray-300 text-lg">Loading lifetime data...</p>
+            </div>
+            <div v-else-if="errorLifetime" class="text-center py-8 text-red-600 dark:text-red-400 font-medium text-lg">
+                {{ errorLifetime }}
+                <button @click="fetchLifetimeData" class="mt-4 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition duration-300 shadow-md">Retry</button>
+            </div>
+            <div v-else-if="lifetimeData.length" class="overflow-x-auto rounded-xl border border-gray-300 dark:border-gray-600 shadow-inner">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-100 dark:bg-gray-700">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Date</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Production (Wh)</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Consumption (Wh)</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Import (Wh)</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Export (Wh)</th>
+                    </tr>
+                    </thead>
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr v-for="data in paginatedLifetimeData" :key="data.date" class="hover:bg-blue-50 dark:hover:bg-gray-700 transition duration-150">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ data.date }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ data.production }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ data.consumption }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ data.import }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ data.export }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400 text-lg">
+                No lifetime data available.
+            </div>
+
+            <!-- Pagination and Items Per Page Controls -->
+            <div class="flex flex-col justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8">
+                <div v-if="lifetimeData.length > itemsPerPage" class="flex flex-wrap justify-center items-center space-x-2">
+                    <button @click="goToPage(1)" :disabled="currentPage === 1"
+                            class="px-4 py-2 bg-indigo-500 text-white rounded-lg shadow-md hover:bg-indigo-600 dark:bg-indigo-700 dark:hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition duration-300">
+                        First
+                    </button>
+                    <button @click="prevPage" :disabled="currentPage === 1"
+                            class="px-4 py-2 bg-indigo-500 text-white rounded-lg shadow-md hover:bg-indigo-600 dark:bg-indigo-700 dark:hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition duration-300">
+                        Previous
+                    </button>
+                    <span class="text-gray-700 dark:text-gray-300 font-medium">Page {{ currentPage }} of {{ totalPages }}</span>
+                    <button @click="nextPage" :disabled="currentPage === totalPages"
+                            class="px-4 py-2 bg-indigo-500 text-white rounded-lg shadow-md hover:bg-indigo-600 dark:bg-indigo-700 dark:hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition duration-300">
+                        Next
+                    </button>
+                    <button @click="goToPage(totalPages)" :disabled="currentPage === totalPages"
+                            class="px-4 py-2 bg-indigo-500 text-white rounded-lg shadow-md hover:bg-indigo-600 dark:bg-indigo-700 dark:hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition duration-300">
+                        Last
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex flex-col justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8">
+
+                <div class="flex flex-wrap justify-center items-center space-x-2">
+                    <span class="text-gray-700 dark:text-gray-300 font-medium">Items per page:</span>
+                    <button @click="setItemsPerPage(10)" :class="{'bg-indigo-700': itemsPerPage === 10, 'bg-gray-200 dark:bg-gray-700': itemsPerPage !== 10, 'text-white dark:text-gray-100': itemsPerPage === 10, 'text-gray-700 dark:text-gray-300': itemsPerPage !== 10}" class="px-3 py-1 rounded-lg text-sm font-medium hover:bg-indigo-600 dark:hover:bg-indigo-600 transition duration-200">10</button>
+                    <button @click="setItemsPerPage(25)" :class="{'bg-indigo-700': itemsPerPage === 25, 'bg-gray-200 dark:bg-gray-700': itemsPerPage !== 25, 'text-white dark:text-gray-100': itemsPerPage === 25, 'text-gray-700 dark:text-gray-300': itemsPerPage !== 25}" class="px-3 py-1 rounded-lg text-sm font-medium hover:bg-indigo-600 dark:hover:bg-indigo-600 transition duration-200">25</button>
+                    <button @click="setItemsPerPage(50)" :class="{'bg-indigo-700': itemsPerPage === 50, 'bg-gray-200 dark:bg-gray-700': itemsPerPage !== 50, 'text-white dark:text-gray-100': itemsPerPage === 50, 'text-gray-700 dark:text-gray-300': itemsPerPage !== 50}" class="px-3 py-1 rounded-lg text-sm font-medium hover:bg-indigo-600 dark:hover:bg-indigo-600 transition duration-200">50</button>
+                    <button @click="setItemsPerPage(100)" :class="{'bg-indigo-700': itemsPerPage === 100, 'bg-gray-200 dark:bg-gray-700': itemsPerPage !== 100, 'text-white dark:text-gray-100': itemsPerPage === 100, 'text-gray-700 dark:text-gray-300': itemsPerPage !== 100}" class="px-3 py-1 rounded-lg text-sm font-medium hover:bg-indigo-600 dark:hover:bg-indigo-600 transition duration-200">100</button>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- Footer Section -->
+    <footer class="py-6 text-center text-gray-600 dark:text-gray-400 text-sm">
+        <p>Enphasy Dashboard. Check out the project on <a href="https://github.com/Drarox/Enphasy" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">GitHub</a>.</p>
+    </footer>
+</div>
+
+<script>
+    const { createApp, ref, onMounted, computed, watch } = Vue;
+
+    createApp({
+        setup() {
+            // Reactive data properties
+            const currentData = ref(null);
+            const lifetimeData = ref([]);
+            const dailyData = ref(null);
+            const loadingCurrent = ref(true);
+            const loadingLifetime = ref(true);
+            const loadingDaily = ref(true);
+            const errorCurrent = ref(null);
+            const errorLifetime = ref(null);
+            const errorDaily = ref(null);
+            const selectedDate = ref(''); // Initialize as empty, will be set in onMounted
+
+            // Pagination for Lifetime Data
+            const itemsPerPage = ref(10); // Default items per page
+            const currentPage = ref(1);
+
+            // Computed property for paginated lifetime data
+            const paginatedLifetimeData = computed(() => {
+                const startIndex = (currentPage.value - 1) * itemsPerPage.value;
+                const endIndex = startIndex + itemsPerPage.value;
+                // Sort data by date in descending order before slicing for pagination
+                const sortedData = [...lifetimeData.value].sort((a, b) => new Date(b.date) - new Date(a.date));
+                return sortedData.slice(startIndex, endIndex);
+            });
+
+            // Computed property for total pages
+            const totalPages = computed(() => {
+                return Math.ceil(lifetimeData.value.length / itemsPerPage.value);
+            });
+
+            // Functions to navigate pages
+            const goToPage = (page) => {
+                if (page >= 1 && page <= totalPages.value) {
+                    currentPage.value = page;
+                }
+            };
+
+            const prevPage = () => {
+                if (currentPage.value > 1) {
+                    currentPage.value--;
+                }
+            };
+
+            const nextPage = () => {
+                if (currentPage.value < totalPages.value) {
+                    currentPage.value++;
+                }
+            };
+
+            // Function to set items per page
+            const setItemsPerPage = (count) => {
+                itemsPerPage.value = count;
+                currentPage.value = 1; // Reset to first page when changing items per page
+            };
+
+            // Function to fetch current data
+            const fetchCurrentData = async () => {
+                loadingCurrent.value = true;
+                errorCurrent.value = null;
+                try {
+                    // Changed path to relative
+                    const response = await fetch('/current');
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    currentData.value = await response.json();
+                } catch (error) {
+                    console.error('Error fetching current data:', error);
+                    errorCurrent.value = 'Failed to load current data.';
+                } finally {
+                    loadingCurrent.value = false;
+                }
+            };
+
+            // Function to fetch lifetime data
+            const fetchLifetimeData = async () => {
+                loadingLifetime.value = true;
+                errorLifetime.value = null;
+                try {
+                    // Changed path to relative
+                    const response = await fetch('/lifetime');
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    lifetimeData.value = await response.json();
+                    currentPage.value = 1; // Reset to first page on new data
+                } catch (error) {
+                    console.error('Error fetching lifetime data:', error);
+                    errorLifetime.value = 'Failed to load lifetime data.';
+                } finally {
+                    loadingLifetime.value = false;
+                }
+            };
+
+            // Function to fetch daily data for a specific date or 'yesterday'
+            const fetchDailyData = async (dateParam) => {
+                loadingDaily.value = true;
+                errorDaily.value = null;
+                try {
+                    // Changed path to relative
+                    const response = await fetch(`/daily/${dateParam}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    dailyData.value = await response.json();
+                } catch (error) {
+                    console.error(`Error fetching daily data for ${dateParam}:`, error);
+                    errorDaily.value = `Failed to load daily data for ${dateParam}.`;
+                } finally {
+                    loadingDaily.value = false;
+                }
+            };
+
+            // Watcher for selectedDate to refetch daily data
+            watch(selectedDate, (newDate) => {
+                if (newDate) { // Only fetch if newDate is not empty
+                    fetchDailyData(newDate);
+                }
+            });
+
+            // Set selectedDate to yesterday's date
+            const selectYesterday = () => {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                selectedDate.value = yesterday.toISOString().slice(0, 10);
+            };
+
+            // Helper function to format Unix timestamp
+            const formatTimestamp = (timestamp) => {
+                if (!timestamp) return 'N/A';
+                const date = new Date(timestamp * 1000);
+                return date.toLocaleString();
+            };
+
+            // Dark mode logic
+            const isDarkMode = ref(false);
+
+            const applyDarkMode = (isDark) => {
+                if (isDark) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            };
+
+            // Fetch data and set dark mode on component mount
+            onMounted(() => {
+                // Set yesterday's date as default for daily data
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                selectedDate.value = yesterday.toISOString().slice(0, 10);
+
+                fetchCurrentData();
+                fetchLifetimeData();
+
+                // Initial dark mode check
+                isDarkMode.value = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                applyDarkMode(isDarkMode.value);
+
+                // Listen for changes in system dark mode preference
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+                    isDarkMode.value = event.matches;
+                    applyDarkMode(isDarkMode.value);
+                });
+            });
+
+            // Return all reactive properties and functions to be used in template
+            return {
+                currentData, lifetimeData, dailyData,
+                loadingCurrent, loadingLifetime, loadingDaily,
+                errorCurrent, errorLifetime, errorDaily,
+                selectedDate,
+                itemsPerPage, // Export for use in template
+                paginatedLifetimeData, totalPages, currentPage,
+                goToPage, prevPage, nextPage, setItemsPerPage, // Export new function
+                fetchCurrentData, fetchLifetimeData, fetchDailyData,
+                selectYesterday, formatTimestamp,
+            };
+        },
+    }).mount('#app');
+</script>
+</body>
+</html>
