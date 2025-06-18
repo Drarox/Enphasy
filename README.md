@@ -51,7 +51,7 @@ Create a `.env` file or use environment injection via Docker:
 
 ```env
 ENPHASE_API_KEY=your_api_key_here
-ENPHASE_INITAL_REFRESH_TOKEN=your_initial_refresh_token
+ENPHASE_INITIAL_REFRESH_TOKEN=your_initial_refresh_token
 ENPHASE_BASIC_AUTH=base64encoded(client_id:secret)
 SYSTEM_ID=your_enphase_system_id (can be found in the Enphase dashboard or mobile app)
 REQ_CACHE_MINUTES=60 (optionnal)
@@ -81,7 +81,7 @@ services:
       - db:/usr/src/app/db
     environment:
       ENPHASE_API_KEY: your_api_key
-      ENPHASE_INITAL_REFRESH_TOKEN: your_refresh_token
+      ENPHASE_INITIAL_REFRESH_TOKEN: your_refresh_token
       ENPHASE_BASIC_AUTH: xxxxx= #base64encoded(client_id:secret)
       SYSTEM_ID: 00000000 #can be found in the Enphase dashboard or mobile app
     #OR use env_file:
@@ -197,7 +197,7 @@ This will return a JSON like:
 Set it in your `.env` or `docker-compose.yml`:
 
 ```env
-ENPHASE_INITAL_REFRESH_TOKEN=your-refresh-token
+ENPHASE_INITIAL_REFRESH_TOKEN=your-refresh-token
 ```
 
 ---

@@ -50,7 +50,7 @@ export async function fetchLifetime(endpoint: string) {
 }
 
 export async function refreshAccessToken() {
-  const currentRefreshToken = getRefreshToken() || Bun.env.ENPHASE_INITAL_REFRESH_TOKEN;
+  const currentRefreshToken = getRefreshToken() || Bun.env.ENPHASE_INITIAL_REFRESH_TOKEN;
   if (!currentRefreshToken) {
     console.error('[Fatal] Aborting server due to missing refresh token in database or environment.');
     process.exit(1);
