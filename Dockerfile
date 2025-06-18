@@ -28,6 +28,7 @@ COPY --from=build /usr/src/app/dist ./dist
 COPY --from=install /temp/prod/node_modules ./node_modules
 COPY package.json ./
 COPY tsconfig.json ./
+COPY static ./static
 
 USER bun
 EXPOSE 3000

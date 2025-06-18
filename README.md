@@ -34,7 +34,7 @@ To overcome this limitation, **Enphasy uses Enphase’s official cloud API** to 
 
 Once the service is running, you can access:
 
--  A small **Dashboard** (minimal status view) on `/`
+- A small **Dashboard** (minimal status view) on `/`
 - The **Full API documentation** (made via Scalar) on `/docs`
 
 ---
