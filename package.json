@@ -6,7 +6,8 @@
     "build": "bun build src/index.ts --outdir=dist --target=bun",
     "test": "bun test",
     "docker-build": "docker buildx build --platform linux/amd64,linux/arm64 -t drarox/enphasy:latest --load .",
-    "docker-build-deploy": "docker buildx build --platform linux/amd64,linux/arm64 -t drarox/enphasy:latest --push ."
+    "docker-build-deploy": "docker buildx build --platform linux/amd64,linux/arm64 -t drarox/enphasy:latest --push .",
+    "test-build-deploy": "bun run test && bun run docker-build-deploy"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.7.0",

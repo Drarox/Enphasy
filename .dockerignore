@@ -16,3 +16,4 @@ coverage*
 *.sqlite
 .DS_Store
 dist/
+.dockerignore
